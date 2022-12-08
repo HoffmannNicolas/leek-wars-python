@@ -1,0 +1,42 @@
+
+from item import Item
+
+class Weapon(Item):
+
+    """ Class Weapon containing the weapon stats """
+
+    # TODO : Put everything in a .csv
+    WEAPON_AXE = 0
+    WEAPON_BAZOOKA = 1
+    WEAPON_B_LASER = 2
+    WEAPON_BROADSWORD = 3
+    WEAPON_DARK_KATANA = 4
+    WEAPON_DESTROYER = 5
+    WEAPON_DOUBLE_GUN = 6
+    WEAPON_ELECTRISOR = 7
+    WEAPON_ENHANCED_LIGHTNINGER = 8
+    WEAPON_EXPLORER_RIFLE = 9
+    WEAPON_FLAME_THROWER = 10
+    WEAPON_GAZOR = 11
+    WEAPON_GRENADE_LAUNCHER = 12
+    WEAPON_ILLICIT_GRENADE_LAUNCHER = 13
+    WEAPON_J_LASER = 14
+    WEAPON_KATANA = 15
+    WEAPON_LASER = 16
+    WEAPON_LIGHTNINGER = 17
+    WEAPON_MACHINE_GUN = 18
+    WEAPON_MAGNUM = 19
+    WEAPON_M_LASER = 20
+    WEAPON_MYSTERIOUS_ELECTRISOR = 21
+    WEAPON_NEUTRINO = 22
+    WEAPON_PISTOL = 23
+    WEAPON_REVOKED_M_LASER = 24
+    WEAPON_RHINO = 25
+    WEAPON_RIFLE = 26
+    WEAPON_SHOTGUN = 27
+    WEAPON_SWORD = 28
+    WEAPON_UNBRIDLED_GAZOR = 29
+    WEAPON_UNSTABLE_DESTROYER = 30
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
