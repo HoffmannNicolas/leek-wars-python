@@ -4,7 +4,7 @@ import random
 
 class Entity(ABC):
 
-    """ Abstract mother class of all entities : Leeks, Bulbs, Turrets and chests """
+    """ Abstract mother class of all entities: Leeks, Bulbs, Turrets and chests """
 
     # Names of entities
     LEEK = 0
@@ -12,8 +12,9 @@ class Entity(ABC):
     TURRET = 2
     CHEST = 3
 
-    def __init__(self, stats, items, policy):
-        self.stats = stats
+    def __init__(self, staticStats, dynamicStats, items, policy):
+        self.staticStats = staticStats # Stats of the leek outside combat
+        self.dynamicStats = dynamicStats # Stats that change in combat
         self.items = items
         self.policy = policy
         self.type = None # Exactely one of <LEEK>, <BULB>, <TURRET> or <CHEST>
@@ -42,44 +43,54 @@ class Entity(ABC):
             effectiveDammage = int(value * relative_shield_percent - self.absolute_shield)
             effectiveDammage = max(0, effectiveDammage) # Negative damage does not heal entity
             self.hp -= effectiveDammage
-            self.hp =c max(0, self.hp) # HP cannot be negative
-        # TODO : Implement impact of every effect on entity
+            self.hp = max(0, self.hp) # HP cannot be negative
+        # TODO: Implement impact of every effect on entity
 
 
     def __str__(self):
         toPrint = ""
-        if (self.type == Entity.LEEK) : toPrint += f"[Leek]"
-        if (self.type == Entity.BULB) : toPrint += f"[Bulb]"
-        if (self.type == Entity.TURRET) : toPrint += f"[Turret]"
-        if (self.type == Entity.CHEST) : toPrint += f"[Chest]"
+        if (self.type == Entity.LEEK): toPrint += f"[Leek]"
+        if (self.type == Entity.BULB): toPrint += f"[Bulb]"
+        if (self.type == Entity.TURRET): toPrint += f"[Turret]"
+        if (self.type == Entity.CHEST): toPrint += f"[Chest]"
         toPrint += "\n"
         toPrint += f"\t-Items: {self.items}\n"
-        for (stat_name, stat_value) in self.stats.items() :
+        for (stat_name, stat_value) in self.staticStats.items():
+            toPrint += f"\t-{stat_name}: {stat_value}\n"
+        for (stat_name, stat_value) in self.dynamicStats.items():
             toPrint += f"\t-{stat_name}: {stat_value}\n"
         return toPrint
 
 
     @classmethod
-    def sample(cls) :
+    def sample(cls):
 
         """ Sample a random <Entity>.
         Although this very class cannot be instanciated, all children can be randomly sampled the same way."""
 
-        randomStats = {
-            "Max Life Points" : random.randint(0, 100),
-            "Strength" : random.randint(0, 100),
-            "Wisdom" : random.randint(0, 100),
-            "Agility" : random.randint(0, 100),
-            "Resistance" : random.randint(0, 100),
-            "Science" : random.randint(0, 100),
-            "Magic" : random.randint(0, 100),
-            "Frequency" : random.randint(0, 100),
-            "Max Movement Points" : random.randint(0, 100),
-            "Max Turn Points" : random.randint(0, 100),
+        randomStaticStats = {
+            "Max Life Points": random.randint(0, 100),
+            "Strength": random.randint(0, 100),
+            "Wisdom": random.randint(0, 100),
+            "Agility": random.randint(0, 100),
+            "Resistance": random.randint(0, 100),
+            "Science": random.randint(0, 100),
+            "Magic": random.randint(0, 100),
+            "Frequency": random.randint(0, 100),
+            "Max Movement Points": random.randint(0, 100),
+            "Max Turn Points": random.randint(0, 100),
         }
-        randomStats["Life Points"] = randomStats["Max Life Points"]
-        randomStats["Movement Points"] = randomStats["Max Movement Points"]
-        randomStats["Turn Points"] = randomStats["Max Turn Points"]
+
+        randomDynamicStats = {
+            "Relative Shield": 0,
+            "Absolute Shield": 0,
+            "Poison": 0,
+            "Weakness": 0,
+            "Life Points": randomStaticStats["Max Life Points"],
+            "Movement Points": randomStaticStats["Max Movement Points"],
+            "Turn Points": randomStaticStats["Max Turn Points"]
+        }
+
         items = [] # TODO
         randomPolicy = [] # TODO
-        return cls(randomStats, items, randomPolicy)
+        return cls(randomStaticStats, randomDynamicStats, items, randomPolicy)
