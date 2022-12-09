@@ -21,6 +21,18 @@ class Battle:
         return True # TODO
 
 
+    def entityUseItemOnCell(self, entity, item, cell):
+        for effect in item:
+            self.entityApplyEffectOnCell(entity, effect, cell)
+
+
+    def entityApplyEffectOnCell(self, entity, effect, cell):
+        value = 42 # TODO
+        affected_entities = [] # TODO
+        for entity in affected_entities:
+            entity.applyEffect(effect, value)
+
+
     def carryOutAtomicAction(self, action, player) -> bool:
         """ Modify the entities according to the <action> performed by the <player> """
         # TODO

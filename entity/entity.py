@@ -35,6 +35,17 @@ class Entity(ABC):
         return False
 
 
+    def applyEffect(self, effect, value):
+        if (effect == Effect.EFFECT_DAMAGE):
+            effective_relative_shield_percent = min(100, self.relative_shield_percent)
+            relative_shield_multiplier = 1 - effective_relative_shield_percent / 100
+            effectiveDammage = int(value * relative_shield_percent - self.absolute_shield)
+            effectiveDammage = max(0, effectiveDammage) # Negative damage does not heal entity
+            self.hp -= effectiveDammage
+            self.hp =c max(0, self.hp) # HP cannot be negative
+        # TODO : Implement impact of every effect on entity
+
+
     def __str__(self):
         toPrint = ""
         if (self.type == Entity.LEEK) : toPrint += f"[Leek]"
