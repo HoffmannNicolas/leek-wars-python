@@ -16,7 +16,7 @@ class Terrain():
         self.width, self.height = map.shape
 
 
-    def cellIsInMap(self, x, y):
+    def cell_is_in_map(self, x, y):
         if (
             x < 0
             or x >= self.width
@@ -27,11 +27,15 @@ class Terrain():
         return True
 
 
-    def cellIsFree(self, x, y):
+    def cell_is_free(self, x, y):
         """ Cell is free.. of static obstacles """
-        if (cellIsInMap(x, y)):
+        if (cell_is_in_map(x, y)):
             return self.map[x, y] == Terrain.FREE_CELL
         return False
+
+
+    def cell_is_not_free(self, *args, **kwargs):
+        return not(self.cell_is_free(*args, **kwargs))
 
 
     def __str__(self):
