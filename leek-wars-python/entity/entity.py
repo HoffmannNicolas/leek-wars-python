@@ -1,6 +1,8 @@
 
 from abc import ABC
 import random
+from ..policy import Policy
+
 
 class Entity(ABC):
 
@@ -12,14 +14,26 @@ class Entity(ABC):
     TURRET = 2
     CHEST = 3
 
-    def __init__(self, base_stats, dynamic_stats, items, policy):
+    def __init__(self, base_stats, dynamic_stats, items, effects_over_time, policy):
         for (stat_name, stat_value) in base_stats.items():
             self.__dict__[stat_name] = stat_value
         for (stat_name, stat_value) in dynamic_stats.items():
             self.__dict__[stat_name] = stat_value
         self.items = items
         self.policy = policy
+
+        self.effects_over_time = effects_over_time # List of [Effects] that last several turns, such as poison, buffs or debuffs.
+        # <effects_over_time> are reapplied at the beginning of the leek's turn for the duration of the effect.
+
         self.type = None # Exactely one of <LEEK>, <BULB>, <TURRET> or <CHEST>
+
+
+    def start_turn(self):
+        pass # TODO
+
+
+    def end_turn(self):
+        pass # TODO
 
 
     def isLeek(self):
@@ -105,5 +119,6 @@ class Entity(ABC):
         }
 
         items = [] # TODO
-        randomPolicy = [] # TODO
-        return cls(random_base_stats, random_dynamic_stats, items, randomPolicy)
+        effects_over_time = []
+        randomPolicy = Policy.sample()
+        return cls(random_base_stats, random_dynamic_stats, items, effects_over_time, randomPolicy)
