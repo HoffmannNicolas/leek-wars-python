@@ -29,7 +29,7 @@ class Terrain():
 
     def cell_is_free(self, x, y):
         """ Cell is free.. of static obstacles """
-        if (cell_is_in_map(x, y)):
+        if (self.cell_is_in_map(x, y)):
             return self.map[x, y] == Terrain.FREE_CELL
         return False
 
