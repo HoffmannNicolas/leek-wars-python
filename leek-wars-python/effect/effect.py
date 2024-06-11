@@ -1,9 +1,12 @@
 
-from abc import ABC
+import random
+from .targets import Targets
+from .modifiers import Modifiers
 
-class Effect(ABC):
 
-    """ Abstract class containing effects """
+class Effect():
+
+    """ Effect of an item """
 
     EFFECT_ABSOLUTE_SHIELD = 0
     EFFECT_ABSOLUTE_VULNERABILITY = 1
@@ -74,11 +77,105 @@ class Effect(ABC):
     EFFECT_TELEPORT = 66
     EFFECT_VULNERABILITY = 67
 
+    EFFECTS = [
+        EFFECT_ABSOLUTE_SHIELD,
+        EFFECT_ABSOLUTE_VULNERABILITY,
+        EFFECT_AFTEREFFECT,
+        EFFECT_ALLY_KILLED_TO_AGILITY,
+        EFFECT_ANTIDOTE,
+        EFFECT_ATTRACT,
+        EFFECT_BOOST_MAX_LIFE,
+        EFFECT_BUFF_AGILITY,
+        EFFECT_BUFF_MP,
+        EFFECT_BUFF_RESISTANCE,
+        EFFECT_BUFF_STRENGTH,
+        EFFECT_BUFF_TP,
+        EFFECT_BUFF_WISDOM,
+        EFFECT_CRITICAL_TO_HEAL,
+        EFFECT_DAMAGE,
+        EFFECT_DAMAGE_RETURN,
+        EFFECT_DAMAGE_TO_ABSOLUTE_SHIELD,
+        EFFECT_DAMAGE_TO_STRENGTH,
+        EFFECT_DEBUFF,
+        EFFECT_HEAL,
+        EFFECT_INVERT,
+        EFFECT_KILL,
+        EFFECT_KILL_TO_TP,
+        EFFECT_LIFE_DAMAGE,
+        EFFECT_MODIFIER_IRREDUCTIBLE,
+        EFFECT_MODIFIER_MULTIPLIED_BY_TARGETS,
+        EFFECT_MODIFIER_NOT_REPLACEABLE,
+        EFFECT_MODIFIER_ON_CASTER,
+        EFFECT_MODIFIER_STACKABLE,
+        EFFECT_MOVED_TO_MP,
+        EFFECT_NOVA_DAMAGE,
+        EFFECT_NOVA_DAMAGE_TO_MAGIC,
+        EFFECT_NOVA_VITALITY,
+        EFFECT_POISON,
+        EFFECT_POISON_TO_SCIENCE,
+        EFFECT_PROPAGATION,
+        EFFECT_PUSH,
+        EFFECT_RAW_ABSOLUTE_SHIELD,
+        EFFECT_RAW_BUFF_AGILITY,
+        EFFECT_RAW_BUFF_MAGIC,
+        EFFECT_RAW_BUFF_MP,
+        EFFECT_RAW_BUFF_POWER,
+        EFFECT_RAW_BUFF_RESISTANCE,
+        EFFECT_RAW_BUFF_SCIENCE,
+        EFFECT_RAW_BUFF_STRENGTH,
+        EFFECT_RAW_BUFF_TP,
+        EFFECT_RAW_BUFF_WISDOM,
+        EFFECT_RAW_HEAL,
+        EFFECT_RAW_RELATIVE_SHIELD,
+        EFFECT_RELATIVE_SHIELD,
+        EFFECT_REMOVE_SHACKLES,
+        EFFECT_REPEL,
+        EFFECT_RESURRECT,
+        EFFECT_SHACKLE_AGILITY,
+        EFFECT_SHACKLE_MAGIC,
+        EFFECT_SHACKLE_MP,
+        EFFECT_SHACKLE_STRENGTH,
+        EFFECT_SHACKLE_TP,
+        EFFECT_SHACKLE_WISDOM,
+        EFFECT_STEAL_ABSOLUTE_SHIELD,
+        EFFECT_SUMMON,
+        EFFECT_TARGET_ALLIES,
+        EFFECT_TARGET_CASTER,
+        EFFECT_TARGET_ENEMIES,
+        EFFECT_TARGET_NON_SUMMONS,
+        EFFECT_TARGET_SUMMONS,
+        EFFECT_TELEPORT,
+        EFFECT_VULNERABILITY
+    ]
 
-    def __init__(self, type, min, max, turns, targets, modifiers):
+
+    def __init__(self, type, value_min, value_max, turns, targets, modifiers):
         self.type = type
-        self.min = min
-        self.max = max
+        self.value_min = value_min
+        self.value_max = value_max
         self.turns = turns
         self.targets = targets
         self.modifiers = modifiers
+
+
+    def __str__(self):
+        toPrint = ""
+        toPrint += f"[Effect] :: Type={self.type} :: Value_Min={self.value_min} :: Value_Max={self.value_max} :: Turns={self.turns} :: Targets={self.targets} :: Modifiers={self.modifiers}"
+        return toPrint
+
+
+    @classmethod
+    def sample(cls):
+        type = random.choice(Effect.EFFECTS)
+        value_min = random.randint(0, 50)
+        value_max = value_min + random.randint(0, 50)
+        turns = random.randint(0, 5)
+        targets = Targets.sample()
+        modifiers = Modifiers.sample()
+        return cls(type, value_min, value_max, turns, targets, modifiers)
+
+
+
+if (__name__ == "__main__"):
+    effect = Effect.sample()
+    print(effect)
