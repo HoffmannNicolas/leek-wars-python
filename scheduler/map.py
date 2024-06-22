@@ -2,6 +2,10 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
+from typing import Tuple
+
+# Make a new type called "Position" for a tuple of two ints
+Position = Tuple[int, int]
 
 
 class Map():
@@ -25,8 +29,8 @@ class Map():
         self._entity_layer = entity_layer
 
 
-    def cell_is_in_map(self, cell):
-        x, y = cell
+    def position_is_in_map(self, position: Position):
+        x, y = position
         if x < 0 or x >= self._width:
             return False
         if y < 0 or y >= self._height:
@@ -34,102 +38,142 @@ class Map():
         return True
 
 
-    def cell_contains_obstacle(self, cell):
-        x, y = cell
-        return self._obstacle_layer[x, y] == 1
+    def obstacle_at_position(self, position: Position) -> bool:
+        """Check if a cell contains an obstacle.
+        
+        Parameters
+        ==========
+        position
+            The position to check for an obstacle.
+
+        Returns
+        =======
+        bool
+            True if the cell contains an obstacle, False otherwise.
+        """
+        return self._obstacle_layer[position] == 1
 
 
-    def cell_contains_entity(self, cell):
-        x, y = cell
-        return self._entity_layer[x, y] != 0
+    def entity_at_position(self, position: Position) -> bool:
+        """Check if a cell contains an entity.
+        
+        Parameters
+        ==========
+        position
+            The position to check for an entity.
+
+        Returns
+        =======
+        bool
+            True if the cell contains an entity, False otherwise.
+        """
+        return self._entity_layer[position] != 0
 
 
-    def compute_distance_between_cells(self, cell1, cell2):
-        return abs(cell1[0] - cell2[0]) + abs(cell1[1] - cell2[1])
-    def compute_distance_between_entities(self, entity1, entity2):
-        return self.compute_distance_between_cells(entity1.get_cell(), entity2.get_cell())
+    def distance_between(self, position_1: Position, position_2: Position, order: int = 1) -> float:
+        """Compute the L1 or L2 distance between two positions.
+
+        Parameters
+        ==========
+        position_1
+            The first position.
+        position_2
+            The second position.
+        order
+            The norm to use for the distance computation. Must be 1 or 2.
+
+        Returns
+        =======
+        float
+            The distance between the two positions.
+        """
+
+        if order == 1:
+            return abs(position_1[0] - position_2[0]) + abs(position_1[1] - position_2[1])
+
+        return np.linalg.norm(np.array(position_1) - np.array(position_2), ord=2)
 
 
-    def add_entity(self, entity_index, cell):
+    def add_entity(self, entity_index: int, position: Position) -> bool:
+        """Add an entity to the map at a specified position.
 
-        """ Add the entity to the map at the given cell, if possible.
-        Return True if the entity was added, False otherwise. """
+        Parameters
+        ==========
+        entity_index
+            The index of the entity to be added.
+        position
+            The coordinates of the position where the entity is to be added.
 
-        if not self.cell_is_in_map(cell):
+        Returns
+        =======
+        bool
+            True if the entity was successfully added, False otherwise.
+        """
+        if not self.position_is_in_map(position):
             return False
-        if self.cell_contains_obstacle(cell):
+        if self.obstacle_at_position(position):
             return False
-        if self.cell_contains_entity(cell):
+        if self.entity_at_position(position):
             return False
 
-        x, y = cell
-        self._entity_layer[x, y] = entity_index
+        self._entity_layer[position] = entity_index
         return True
 
 
-    def remove_entity_by_cell(self, cell):
+    def remove_entity_at(self, position: Position) -> bool:
+        """Remove an entity from the map at a specified position.
 
-        """ Remove the entity at the given cell, if possible.
-        Return True if the entity was removed, False otherwise. """
+        Parameters
+        ==========
+        position
+            The coordinates of the position where the entity is to be removed.
+        
+        Returns
+        =======
+        bool
+            True if the entity was successfully removed, False otherwise.
+        """
 
-        if not self.cell_is_in_map(cell):
+        if not self.position_is_in_map(position):
             return False
 
-        x, y = cell
-        self._entity_layer[x, y] = 0
+        self._entity_layer[position] = 0
         return True
 
 
-    def find_cell_of_entity(self, entity_index):
+    def iterate_neighbouring_cells(self, position: Position) -> list[Position]:
+        """ Return a list of neighbouring cells of the given cell.
+        
+        Parameters
+        ==========
+        position
+            The position of the cell for which to find neighbouring cells.
+            
+        Returns
+        =======
+        list
+            A list of neighbouring cells.
+        """
 
-        """ Return the cell of the entity with the given index, if any.
-        This function is not efficient and should be used sparingly."""
-
-        x, y = np.where(self._entity_layer == entity_index)
-
-        if len(x) == 0:
-            return None
-
-        return (x[0], y[0])
-
-
-    def remove_entity_by_index(self, entity_index):
-
-        """ Remove the entity with the given index, if possible.
-        Return True if the entity was removed, False otherwise.
-        This function is not efficient and should be used sparingly."""
-
-        entity_cell = self.find_cell_of_entity(entity_index)
-        if entity_cell is None:
-            return False
-        return self.remove_entity_by_cell(entity_cell)
-
-
-    def iterate_neighbouring_cells(self, cell):
-
-        """ Iterate over the neighbouring valid cells of the given cell."""
-
-        x, y = cell
-        for dx in [-1, 0, 1]:
-            for dy in [-1, 0, 1]:
-
-                if dx == 0 and dy == 0:
-                    continue # Skip the cell itself
-
-                neighbour = (x + dx, y + dy)
-
-                if not self.cell_is_in_map(neighbour):
-                    continue
-
-                yield neighbour
-
+        x, y = position
+        return filter([
+            (x-1, y-1),
+            (x-1, y),
+            (x-1, y+1),
+            (x, y-1),
+            (x, y+1),
+            (x+1, y-1),
+            (x+1, y),
+            (x+1, y+1)
+        ], self.position_is_in_map)
+ 
 
     def compute_cells_in_area(self, cell, distance):
 
         """ Return a dictionary of cells in the area around the given cell."""
 
         assert distance >= 0, "Distance must be positive."
-        assert self.cell_is_in_map(cell), "Cell must be in the map."
+        assert self.position_is_in_map(cell), "Cell must be in the map."
 
         frontier = [cell]
         cells_in_area = {}
@@ -137,7 +181,7 @@ class Map():
         while len(frontier) > 0:
 
             current_cell = frontier.pop(0)
-            cell_distance = self.compute_distance_between_cells(cell, current_cell)
+            cell_distance = self.distance_between(cell, current_cell)
 
             if cell_distance > distance:
                 continue
@@ -162,7 +206,7 @@ class Map():
 
         for cell in self.compute_cells_in_area(cell, distance):
 
-            if self.cell_contains_entity(cell):
+            if self.entity_at_position(cell):
                 entities_in_area.append(self._entity_layer[cell])
 
         return entities_in_area
@@ -251,10 +295,16 @@ class Map_test(Map):
 
 
 def main():
-    map = Map_test.generate_default_map(width=300, height=300)
+    map = Map_test.generate_default_map(width=200, height=200)
     map.plot_obstacles()
-    map.plot_distance()
+    # map.plot_distance()
 
+    # Inspect object map and print all methods with params
+    methods = [method for method in dir(map) if callable(getattr(map, method))]
+    methods = [method for method in methods if not method.startswith("__")]
+    for method in methods:
+        print(f"Method: {method}")
+    
 
 
 if __name__ == "__main__":
